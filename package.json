@@ -1,0 +1,33 @@
+{
+  "name": "cucumber-tester",
+  "version": "1.0.0",
+  "description": "test blueprints using cucumber notation",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint ./src  --ext .js --max-warnings=0",
+    "tests": "node ./node_modules/.bin/cucumber-js --require './src/support/*.js' --require './features/support/*.js'"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/flow-build/cucumber-tester.git"
+  },
+  "keywords": [
+    "flowbuild",
+    "cucumber"
+  ],
+  "author": "Gustavo C Haramura",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/flow-build/cucumber-tester/issues"
+  },
+  "homepage": "https://github.com/flow-build/cucumber-tester#readme",
+  "devDependencies": {
+    "eslint": "^8.5.0"
+  },
+  "dependencies": {
+    "@cucumber/cucumber": "^8.0.0-rc.1",
+    "axios": "^0.24.0",
+    "dotenv": "^10.0.0",
+    "winston": "^3.3.3"
+  }
+}
