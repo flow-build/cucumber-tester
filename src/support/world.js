@@ -16,7 +16,7 @@ class CustomWorld {
   }
 
   async getToken(actorId, claims) {
-    logger.info("getToken");
+    logger.verbose("getToken");
     const response = await axios({
       method: "post",
       url: "/token",
@@ -26,7 +26,7 @@ class CustomWorld {
         claims: claims,
       },
     });
-    logger.info("getToken received");
+    logger.debug("getToken received");
     this.token = response.data.jwtToken;
   }
 
@@ -46,28 +46,34 @@ class CustomWorld {
   }
 
   async submitActivity(payload) {
-    logger.info(`submitActivity ${this.amid}`);
+    logger.verbose(`submitActivity ${this.amid}`);
     const response = await axios({
       method: "post",
       url: `/activity_manager/${this.amid}/submit`,
       baseURL: FLOWBUILD_URL,
       headers: { Authorization: `Bearer ${this.token}` },
       data: JSON.parse(payload),
+      validateStatus: function (status) {
+        return status >= 200 && status < 405; // default
+      },
     });
     logger.debug("submitActivity response");
-    if (response.status === 200) {
+    
+    if (response.status > 200 && response.status < 300) {
       return true;
+    } else {
+      logger.warn(`status: ${response.status}, data: ${response.data}`);
     }
     return false;
   }
 
   async waitProcessStop() {
-    logger.info(`waitProcessStop ${this.pid}`);
+    logger.verbose(`waitProcessStop ${this.pid}`);
     const expectedStatus = ["waiting", "error", "finished"];
     do {
       await wait(1000);
       await this.getCurrentState();
-      logger.debug(`process status: ${this.currentStatus}`);
+      logger.debug(`process status: ${this.currentStatus}, node: ${this.nodeId}`);
     } while (!expectedStatus.includes(this.currentStatus));
 
     if (this.currentStatus === "waiting") {
@@ -77,7 +83,7 @@ class CustomWorld {
   }
 
   async getCurrentActivity() {
-    logger.info(`getCurrentActivity ${this.pid}`);
+    logger.verbose(`getCurrentActivity ${this.pid}`);
     const response = await axios({
       method: "get",
       url: `/processes/${this.pid}/activity`,
@@ -91,7 +97,7 @@ class CustomWorld {
   }
 
   async getCurrentState() {
-    logger.info(`getCurrentState ${this.pid}`);
+    logger.verbose(`getCurrentState ${this.pid}`);
     const response = await axios({
       method: "get",
       url: `/processes/${this.pid}`,
